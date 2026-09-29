@@ -10,3 +10,12 @@ target/
 *.log
 logs/
 *.tmp
+
+# nginx：只上传前端代码和配置，忽略其他一切
+nginx-1.18.0/*
+!nginx-1.18.0/html/
+!nginx-1.18.0/conf/
+nginx-1.18.0/html/*
+!nginx-1.18.0/html/hmdp/
+nginx-1.18.0/conf/*
+!nginx-1.18.0/conf/nginx.conf
