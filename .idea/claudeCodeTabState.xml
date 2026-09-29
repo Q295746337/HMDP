@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ClaudeCodeTabState">
+    <option name="tabSessions">
+      <map>
+        <entry key="0">
+          <value>
+            <TabSessionState>
+              <option name="projectPath" value="D:\Java\HMDP\HMDP" />
+              <option name="provider" value="claude" />
+              <option name="sessionId" value="dbdbb1a0-53fc-46e1-b57e-655d51f49c77" />
+              <option name="cwd" value="D:\Java\HMDP\HMDP" />
+              <option name="model" value="claude-opus-5[1m]" />
+              <option name="permissionMode" value="bypassPermissions" />
+            </TabSessionState>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
