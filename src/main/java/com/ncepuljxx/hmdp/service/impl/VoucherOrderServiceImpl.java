@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ncepuljxx.hmdp.utils.RedisIdWorker;
 import com.ncepuljxx.hmdp.utils.UserHolder;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
@@ -114,11 +115,22 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
     }
 
 
-    private static final ExecutorService SECKILL_ORDER_EXECUTOR = Executors.newSingleThreadExecutor();
+    // 单线程处理秒杀订单消息;使用守护线程,应用关闭时JVM可正常退出
+    private static final ExecutorService SECKILL_ORDER_EXECUTOR = Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r, "seckill-order-handler");
+        t.setDaemon(true);
+        return t;
+    });
 
     @PostConstruct
     private void init() {
         SECKILL_ORDER_EXECUTOR.submit(new VoucherOrderHandler());
+    }
+
+    // 应用关闭时向后台线程发送中断信号,避免连接工厂销毁后线程继续访问Redis
+    @PreDestroy
+    public void destroy() {
+        SECKILL_ORDER_EXECUTOR.shutdownNow();
     }
 
     // 使用stream消息队列
@@ -149,6 +161,10 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
                     // 5.ACK确认 SACK stream.orders g1 id
                     stringRedisTemplate.opsForStream().acknowledge(queueName, "g1", record.getId());
                 } catch (Exception e) {
+                    // 应用关闭时线程被中断,直接退出,避免连接工厂销毁后继续访问Redis刷报错
+                    if (Thread.currentThread().isInterrupted()) {
+                        return;
+                    }
                     log.error("处理订单异常", e);
                     handlePendingList();
                 }
@@ -179,11 +195,16 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
                     stringRedisTemplate.opsForStream().acknowledge(queueName, "g1", record.getId());
 
                 } catch (Exception e) {
+                    // 应用关闭时线程被中断,直接退出
+                    if (Thread.currentThread().isInterrupted()) {
+                        return;
+                    }
                     log.error("处理pending-list订单异常", e);
                     try{
                         Thread.sleep(20);
                     }catch (InterruptedException ie){
-                        ie.printStackTrace();
+                        // 休眠被打断说明应用正在关闭,退出循环
+                        return;
                     }
                 }
             }

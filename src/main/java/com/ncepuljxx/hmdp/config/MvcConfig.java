@@ -25,7 +25,8 @@ public class MvcConfig implements WebMvcConfigurer {
                         "/shop/**",
                         "/shop-type/**",
                         "/voucher/**",
-                        "/upload/**"
+                        "/upload/**",
+                        "/chat"
                 ).order(1);
         // token刷新拦截器
         registry.addInterceptor(new RefreshTokenInterceptor(stringRedisTemplate)).addPathPatterns("/**").order(0);

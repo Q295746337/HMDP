@@ -243,6 +243,16 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
     }
 
     @Override
+    public Shop findShop(String shopName) {
+        return getBaseMapper().findShop(shopName);
+    }
+
+    @Override
+    public List<Shop> findShopsByKeyword(String keyword) {
+        return getBaseMapper().findShopsByKeyword(keyword);
+    }
+
+    @Override
     public Result queryShopByType(Integer typeId, Integer current, Double x, Double y) {
         // 1.判断是否需要根据坐标查询
         if (x == null || y == null) {

@@ -21,6 +21,36 @@ spring:
     default-property-inclusion: non_null # JSON处理时忽略非空字段
 mybatis-plus:
   type-aliases-package: com.ncepuljxx.hmdp.entity # 别名扫描包
+langchain4j:
+  open-ai:
+    chat-model:
+      base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+      api-key: sk-8512fdec96b94bca9e7f9c8652fa5658
+      model-name: qwen-plus
+      log-requests: true
+      log-responses: true
+    streaming-chat-model:
+      base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+      api-key: sk-8512fdec96b94bca9e7f9c8652fa5658
+      model-name: qwen-plus
+      log-requests: true
+      log-responses: true
+    embedding-model:
+      base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+      api-key: sk-8512fdec96b94bca9e7f9c8652fa5658
+      model-name: text-embedding-v3
+      log-requests: true
+      log-responses: true
+      max-segments-per-batch: 10
+  community:
+    redis:
+      # Redis向量库(需Redis已加载RediSearch模块)
+      enabled: true
+      host: localhost
+      port: 16379
+      # 向量维度,text-embedding-v3为1024,不配置时自动从EmbeddingModel探测
+      dimension: 1024
 logging:
   level:
     com.ncepuljxx.hmdp: debug
+    dev.langchain4j: debug
