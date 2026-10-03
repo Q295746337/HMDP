@@ -3,6 +3,7 @@ package com.ncepuljxx.hmdp.aiservice;
 import dev.langchain4j.service.MemoryId;
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
+import dev.langchain4j.service.V;
 import dev.langchain4j.service.spring.AiService;
 import dev.langchain4j.service.spring.AiServiceWiringMode;
 import reactor.core.publisher.Flux;
@@ -17,7 +18,8 @@ import reactor.core.publisher.Flux;
         tools = {"shopTool","reservationTool","voucherTool"}
 )
 public interface ConsultantService {
-    //用于聊天的方法
+    //用于聊天的方法(每条消息自动附上当前登录用户的手机号)
     @SystemMessage(fromResource = "system.txt")
-    public Flux<String> chat(@MemoryId String memoryId, @UserMessage String message);
+    @UserMessage("{{message}}\n当前用户手机号:{{phone}}")
+    public Flux<String> chat(@MemoryId String memoryId, @V("message") String message, @V("phone") String phone);
 }

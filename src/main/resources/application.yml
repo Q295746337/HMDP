@@ -50,6 +50,12 @@ langchain4j:
       port: 16379
       # 向量维度,text-embedding-v3为1024,不配置时自动从EmbeddingModel探测
       dimension: 1024
+
+# 会话记忆配置(Redis存储,统一在memory命名空间下,永不删除)
+hmdp:
+  memory:
+    # 每次对话提供给AI的上下文条数(完整历史仍在Redis中,不会丢失)
+    context-size: 30
 logging:
   level:
     com.ncepuljxx.hmdp: debug

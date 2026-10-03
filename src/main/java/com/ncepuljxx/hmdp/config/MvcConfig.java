@@ -16,7 +16,7 @@ public class MvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        // 登录拦截器
+        // 登录拦截器(/chat/**需登录,保证对话记忆与用户绑定)
         registry.addInterceptor(new LoginInterceptor())
                 .excludePathPatterns(
                         "/user/login",
@@ -25,8 +25,7 @@ public class MvcConfig implements WebMvcConfigurer {
                         "/shop/**",
                         "/shop-type/**",
                         "/voucher/**",
-                        "/upload/**",
-                        "/chat"
+                        "/upload/**"
                 ).order(1);
         // token刷新拦截器
         registry.addInterceptor(new RefreshTokenInterceptor(stringRedisTemplate)).addPathPatterns("/**").order(0);

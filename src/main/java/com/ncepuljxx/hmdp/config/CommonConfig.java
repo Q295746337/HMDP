@@ -17,6 +17,7 @@ import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
 import dev.langchain4j.store.memory.chat.ChatMemoryStore;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -31,6 +32,9 @@ public class CommonConfig {
     private EmbeddingModel embeddingModel;
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+    // 每次对话提供给AI的上下文条数(完整历史仍在Redis归档中,不会丢失)
+    @Value("${hmdp.memory.context-size:30}")
+    private int contextSize;
 
     //知识库导入完成标记:存在则跳过导入,删除该键后重启应用可强制重建知识库
     private static final String KB_INGESTED_KEY = "rag:content:ingested";
@@ -52,7 +56,7 @@ public class CommonConfig {
             public ChatMemory get(Object memoryId) {
                 return MessageWindowChatMemory.builder()
                         .id(memoryId)
-                        .maxMessages(20)
+                        .maxMessages(contextSize)
                         .chatMemoryStore(redisChatMemoryStore)
                         .build();
             }
